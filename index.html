@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Promises</title>
+  </head>
+  <body>
+
+  </body>
+  <script type="text/javascript">
+    function addOdd(n) {
+      return new Promise(function(resolve, reject) {
+        var h1 = document.createElement('h1');
+        h1.innerText=String(n);
+        var worker = new Worker('worker.js');
+        worker.postMessage(n);
+        worker.addEventListener('message', function(e) {
+          var obj = { "h1": h1, "n": e.data }
+          resolve(obj);
+        }, false);
+      });
+    }
+
+    function addEven(n) {
+      return new Promise(function(resolve, reject) {
+        var h2 = document.createElement('h2');
+        h2.innerText=String(n);
+        resolve(h2);
+      });
+    }
+
+    var odd  = [1,3,5,7,9];
+    var seq = Promise.resolve();
+
+    odd.map(function(n){
+      console.log('send:'+n);
+      return addOdd(n);
+    })
+    .forEach(function (oddPromise) {
+      seq = seq.then(function(){
+        return oddPromise.then(function(obj){
+          console.log('received:' + obj.n);
+          document.body.append(obj.h1);
+          return addEven(obj.n);
+        });
+      }).then(function(h2){
+        document.body.append(h2);
+      });
+    });
+
+
+  </script>
+</html>
