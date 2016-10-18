@@ -15,7 +15,7 @@
         var worker = new Worker('worker.js');
         worker.postMessage(n);
         worker.addEventListener('message', function(e) {
-          var obj = { "h1": h1, "n": e.data }
+          var obj = { "h1": h1, "n": e.data };
           resolve(obj);
         }, false);
       });
